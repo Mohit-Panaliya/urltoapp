@@ -24,6 +24,13 @@
       "csp": null
     }
   },
+  "android": {
+    "minSdkVersion": 24,
+    "targetSdkVersion": 34
+  },
+  "ios": {
+    "minimumSystemVersion": "15.0"
+  },
   "bundle": {
     "active": true,
     "targets": "all",

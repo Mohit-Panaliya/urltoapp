@@ -1,4 +1,4 @@
-name: Build All Platforms
+name: Build & Release All Platforms
 
 on:
   push:
@@ -29,9 +29,6 @@ jobs:
 
       - name: Install frontend dependencies
         run: npm install
-
-      - name: Build frontend
-        run: npm run build
 
       - name: Build Tauri app
         uses: tauri-apps/tauri-action@v0
@@ -68,9 +65,6 @@ jobs:
 
       - name: Install frontend dependencies
         run: npm install
-
-      - name: Build frontend
-        run: npm run build
 
       - name: Build Tauri app
         uses: tauri-apps/tauri-action@v0
@@ -109,22 +103,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            build-essential \
-            curl \
-            wget \
-            file \
-            libssl-dev \
-            libgtk-3-dev \
-            libwebkit2gtk-4.1-dev \
-            libappindicator3-dev \
-            librsvg2-dev \
-            patchelf
+            build-essential curl wget file libssl-dev \
+            libgtk-3-dev libwebkit2gtk-4.1-dev \
+            libappindicator3-dev librsvg2-dev patchelf
 
       - name: Install frontend dependencies
         run: npm install
-
-      - name: Build frontend
-        run: npm run build
 
       - name: Build Tauri app
         uses: tauri-apps/tauri-action@v0
@@ -143,9 +127,92 @@ jobs:
             src-tauri/target/release/bundle/appimage/*.AppImage
             src-tauri/target/release/bundle/rpm/*.rpm
 
+  build-android:
+    name: Android (APK/AAB)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - name: Build Android
+        run: cargo tauri android build --apk
+        working-directory: src-tauri
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: |
+            src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+            src-tauri/gen/android/app/build/outputs/bundle/**/*.aab
+
+  build-ios:
+    name: iOS (IPA)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - name: Build iOS
+        run: cargo tauri ios build
+        working-directory: src-tauri
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios
+          path: |
+            src-tauri/gen/apple/build/**/*.ipa
+            src-tauri/gen/apple/build/**/*.app
+
   create-release:
     name: Create Release
-    needs: [build-windows, build-macos, build-linux]
+    needs: [build-windows, build-macos, build-linux, build-android, build-ios]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     steps:
@@ -159,5 +226,7 @@ jobs:
             windows-x64/**/*
             macos-universal/**/*
             linux-x64/**/*
+            android/**/*
+            ios/**/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -116,6 +116,8 @@
       <span class="platform">Windows</span>
       <span class="platform">macOS</span>
       <span class="platform">Linux</span>
+      <span class="platform">Android</span>
+      <span class="platform">iOS</span>
     </div>
   </div>
 </div>
