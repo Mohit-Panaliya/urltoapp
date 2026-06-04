@@ -1,0 +1,1 @@
+{"default":{"identifier":"default","description":"Default capabilities for URL to App","local":true,"windows":["main"],"permissions":["core:default","shell:allow-open","core:webview:allow-set-webview-zoom","core:window:allow-set-title"]}}

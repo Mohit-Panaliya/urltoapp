@@ -1,0 +1,40 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nicklasxyz/tauri/main/crates/tauri-config-schema/schema.json",
+  "productName": "URLtoApp",
+  "version": "1.0.0",
+  "identifier": "com.urltoapp.desktop",
+  "build": {
+    "beforeDevCommand": "",
+    "devUrl": "http://141.94.121.111:8071/",
+    "beforeBuildCommand": "",
+    "frontendDist": "../src-tauri/empty"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "title": "URL to App",
+        "width": 1200,
+        "height": 800,
+        "resizable": true,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "shortDescription": "Convert any website into a cross-platform desktop app",
+    "longDescription": "URLtoApp wraps any website into a native desktop application using Tauri. Enter a URL, configure your app name, and build for Windows, macOS, and Linux — all from a single interface. Perfect for turning web apps, dashboards, or tools into standalone desktop applications.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}
