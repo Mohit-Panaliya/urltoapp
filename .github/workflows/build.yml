@@ -138,8 +138,14 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Prepare Android SDK
+        run: |
+          SDK=/usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager
+          [ -x "$SDK" ] || SDK=$(command -v sdkmanager)
+          echo "Using sdkmanager: $SDK"
+          yes | "$SDK" --licenses > /dev/null 2>&1 || true
+          "$SDK" --install "platforms;android-34" "build-tools;34.0.0" > /dev/null 2>&1 || true
+          yes | "$SDK" --licenses > /dev/null 2>&1 || true
 
       - name: Install frontend dependencies
         run: npm install
