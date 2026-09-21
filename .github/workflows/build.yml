@@ -34,13 +34,7 @@ jobs:
         run: npm install
 
       - name: Build Tauri app
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          projectPath: src-tauri
-          args: --verbose
-          includeRelease: false
+        run: npx tauri build --verbose
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -70,14 +64,8 @@ jobs:
       - name: Install frontend dependencies
         run: npm install
 
-      - name: Build Tauri app
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          projectPath: src-tauri
-          args: --verbose --target universal-apple-darwin
-          includeRelease: false
+      - name: Build Tauri app (Universal)
+        run: npx tauri build --verbose --target universal-apple-darwin
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -116,13 +104,7 @@ jobs:
         run: npm install
 
       - name: Build Tauri app
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          projectPath: src-tauri
-          args: --verbose
-          includeRelease: false
+        run: npx tauri build --verbose
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
